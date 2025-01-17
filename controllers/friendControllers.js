@@ -93,6 +93,7 @@ const acceptFriendRequest = async (req, res) => {
 };
 const removeFriend = async (req, res) => {
   const { id } = req.params;
+  console.log(id);
 
   try {
     const friend = await Friend.findById(id);
@@ -104,13 +105,32 @@ const removeFriend = async (req, res) => {
     }
 
     // Remove the friend record
-    await friend.deleteOne();
+    await friend.findByIdAndDelete();
 
     res.status(200).json({ message: "Friend removed successfully." });
   } catch (error) {
     res.status(500).json({ message: "Error removing friend.", error });
   }
 };
+// fetch remove friend
+const fetchRemoveFriend = async (req, res) => {
+  const id = req.user;
+
+  try {
+    const removeFriends = await Friend.find({
+      $or: [{ requester: id }, { recipient: id }],
+      status: "accepted",
+    }).populate(
+      "requester recipient",
+      "firstName lastName profilePicture email"
+    );
+
+    res.status(200).json(removeFriends);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching remove friends.", error });
+  }
+};
+
 const blockFriend = async (req, res) => {
   const { friendId } = req.params;
 
@@ -220,12 +240,10 @@ const unblockFriend = async (req, res) => {
     await friend.save();
 
     res.status(200).json({ message: "Friend unblocked successfully.", friend });
-  }
-  catch (error) {
+  } catch (error) {
     res.status(500).json({ message: "Error unblocking friend.", error });
   }
-}
-
+};
 
 module.exports = {
   sendFriendRequest,
@@ -236,4 +254,5 @@ module.exports = {
   fetchFriendRequests,
   fetchBlockUsers,
   unblockFriend,
+  fetchRemoveFriend,
 };

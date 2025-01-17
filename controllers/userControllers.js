@@ -481,7 +481,7 @@ const searchUsers = async (req, res) => {
         ],
         _id: { $ne: id },
       })
-      .select("firstName lastName email");
+      .select("firstName lastName email profilePicture");
 
     res.status(200).json({ success: true, users: users });
   } catch (error) {

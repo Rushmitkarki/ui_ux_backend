@@ -158,6 +158,7 @@ const getPosts = async (req, res) => {
   try {
     const posts = await Post.find()
       .populate("user", "-password")
+      .populate("comments.user", "firstName lastName profilePicture")
       .sort({ createdAt: -1 });
 
     res.status(200).json({ success: true, posts });
