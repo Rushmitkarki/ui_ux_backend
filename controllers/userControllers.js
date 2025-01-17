@@ -384,7 +384,7 @@ const getUnrequestedUsers = async (req, res) => {
         _id: { $ne: userId },
         email: { $ne: "admin@gmail.com" },
       })
-      .select("firstName lastName email profilePicture");
+      .select("firstName lastName email  profilePicture");
 
     res.status(200).json({
       success: true,
