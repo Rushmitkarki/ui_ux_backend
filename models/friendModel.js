@@ -14,14 +14,13 @@ const friendSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["requested", "accepted", "blocked"],
+    enum: ["requested", "accepted", "blocked", "unblocked"],
     default: "requested",
   },
   timestamp: {
     type: Date,
     default: Date.now,
   },
-
 });
 const Friend = mongoose.model("Friend", friendSchema);
 module.exports = Friend;

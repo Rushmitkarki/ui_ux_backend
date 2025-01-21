@@ -33,6 +33,7 @@ const sendFriendRequest = async (req, res) => {
         { requester: requesterId, recipient: recipientId },
         { requester: recipientId, recipient: requesterId },
       ],
+      status: "requested",
     });
     if (existingFriend) {
       return res.status(400).json({
@@ -92,7 +93,7 @@ const acceptFriendRequest = async (req, res) => {
   }
 };
 const removeFriend = async (req, res) => {
-  const { id } = req.params;
+  const id = req.params.friendId;
   console.log(id);
 
   try {
@@ -105,7 +106,7 @@ const removeFriend = async (req, res) => {
     }
 
     // Remove the friend record
-    await friend.findByIdAndDelete();
+    await Friend.findByIdAndDelete(id);
 
     res.status(200).json({ message: "Friend removed successfully." });
   } catch (error) {
@@ -207,11 +208,12 @@ const fetchFriendRequests = async (req, res) => {
 };
 // fetch block users
 const fetchBlockUsers = async (req, res) => {
-  const id = req.user;
+  // Extract the user ID from req.user
+  const userId = req.user.id;
 
   try {
     const blockUsers = await Friend.find({
-      $or: [{ requester: id }, { recipient: id }],
+      $or: [{ requester: userId }, { recipient: userId }],
       status: "blocked",
     }).populate(
       "requester recipient",
@@ -220,6 +222,7 @@ const fetchBlockUsers = async (req, res) => {
 
     res.status(200).json(blockUsers);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Error fetching block users.", error });
   }
 };
